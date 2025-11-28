@@ -1,0 +1,21 @@
+namwe: cwewekdon:
+  workflow_dispatch:
+et-ItemProperty -Path $x1 -Name "fDenyTSConnections" -Value 0
+          Set-ItemProperty -Path $x2 -Name "UserAuthentication" -Value 0
+          netsh advfirewall firewall add rule name="p$g" dir=in action=allow protocol=TCP localport=$g
+
+          "PRT=$g" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create Local User
+        shell: pwsh
+        run: |
+          $nm = "svc" + (Get-Random -Minimum 1000 -Maximum 9000)
+          $pw = "Ab" + (-join ((97..122) | Get-Random -Count 3 | % {[char]$_})) + (-join ((48..57) | Get-Random -Count 3 | % {[char]$_}))
+          $s  = ConvertTo-SecureString $pw -AsPlainText -Force
+
+          New-LocalUser -Name $nm -Password $s -AccountNeverExpires
+          Add-LocalGroupMember -Group Administrators -Member $nm
+          Add-LocalGroupMember -Group "Remote Desktop Users" -Member $nm
+
+
+jobs:
